@@ -14,8 +14,8 @@ main	ADR	R0, hello	; printf("Hello ")
 start	SVC	1		; input a character to R0
 	SVC	0		; output the character in R0
         CMP     R0,#10
-        BEQ     skip
-        B       start 
+        BNE     start
+
 		
 	; }// translate to ARM code
 

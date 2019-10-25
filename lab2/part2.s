@@ -9,11 +9,17 @@ goodbye	DEFB	" and good-bye!\n\0"
 main	ADR	R0, hello	; print("Hello ")
 	SVC 	3
 next				; while (true) { //The { is just to ease readability, python does not use them
-	SVC	1		; input a character to R0
+start	SVC	1		; input a character to R0
+        CMP     R0,#10         
+        BEQ     skip
+        SVC     0
+        CMP     R0,#10
+        BNE     start
+
 
 	; if R0 == 10 do: // translate to ARM code
 
-	ADR	R0, goodbye 	;   printf(" and good-bye!")
+skip	ADR	R0, goodbye 	;   printf("and good-bye!")
 	SVC	3
 	SVC  	2		;   stop the program
 
