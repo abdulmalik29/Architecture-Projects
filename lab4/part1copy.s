@@ -39,9 +39,9 @@ pYear		  DEFW	2005	;  pYear = 2005 //or whatever is this year
 ;  R5 = age
 ;  R6 = bDay - originally R0
 
-printAgeHistory	STMFD SP!, {R6, R5 ,R4}			; callee saves three registers
-		;STMFD SP!, {}
-		;STMFD SP!, {}
+printAgeHistory	PUSH	{R6}			; callee saves three registers
+		PUSH	{R5}
+		PUSH	{R4}
 
 		LDR	R6, [SP, #(3 + 2) * 4]	; Get parameters from stack
 		LDR	R1, [SP, #(3 + 1) * 4]
@@ -146,9 +146,9 @@ else1
 		SVC	print_char
 
 ; }// end of printAgeHistory
-end2		LDMFD SP!, {R4}		; callee saved registers
-		LDMFD SP!, {R5}
-		LDMFD SP!, {R6}
+end2		POP	{R4}		; callee saved registers
+		POP	{R5}
+		POP	{R6}
 		MOV	PC, LR
 
 another		DEFB	"Another person",10,0
@@ -162,16 +162,15 @@ main
 
 ; printAgeHistory(pDay, pMonth, 2000)
 		LDR	R0, pDay
-		STMFD SP!, {R0}			; Stack first parameter
+		PUSH	{R0}			; Stack first parameter
 		LDR	R0, pMonth
-		STMFD SP!, {R0}			; Stack second parameter
+		PUSH	{R0}			; Stack second parameter
 		MOV	R0, #2000
-		STMFD SP!, {R0}			; Stack third parameter
+		PUSH	{R0}			; Stack third parameter
 		BL	printAgeHistory
-		;ADD   SP, #12			; Deallocate three 32-bit variables
-		LDMFD SP!, {R0}
-		LDMFD SP!, {R0}
-		LDMFD SP!, {R0}
+		POP	{R0}			; Deallocate three 32-bit variables
+		POP	{R0}
+		POP	{R0}
 
 ; print("Another person");
 		ADRL	R0, another
@@ -179,16 +178,15 @@ main
 
 ; printAgeHistory(13, 11, 2000)
 		MOV	R0, #13
-		STMFD SP!, {R0}			; Stack first parameter
+		PUSH	{R0}			; Stack first parameter
 		MOV	R0, #11
-		STMFD SP!, {R0}		; An explicit coding of PUSH
+		STR	R0, [SP, #-4]!		; An explicit coding of PUSH
 		MOV	R0, #2000
 		STMFD	SP!, {R0}		; The STore Multiple mnemonic for PUSH {R0}
 		BL	printAgeHistory
-		;ADD   SP, #12
-		LDMFD SP!, {R0}			; Deallocate three 32-bit variables
-		LDMFD SP!, {R0}
-		LDMFD SP!, {R0}
+		POP	{R0}			; Deallocate three 32-bit variables
+		POP	{R0}
+		POP	{R0}
 
 	; Now check to see if register values intact (Not part of Java)
 	LDR	R0, =&12345678		; Test value
